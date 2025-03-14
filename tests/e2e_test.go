@@ -31,8 +31,9 @@ func TestCp2DotE2E(t *testing.T) {
 		if info.IsDir() && path != testCasesDir {
 			inputFile := filepath.Join(path, "input.txt")
 			expectedOutputFile := filepath.Join(path, "output.txt")
+			argsFile := filepath.Join(path, "args.txt")
 
-			// ファイルが両方存在するか確認
+			// `input.txt`と`output.txt`の存在確認
 			if _, err := os.Stat(inputFile); os.IsNotExist(err) {
 				t.Errorf("Missing input file: %s", inputFile)
 				return nil
@@ -42,8 +43,15 @@ func TestCp2DotE2E(t *testing.T) {
 				return nil
 			}
 
+			// `args.txt`の読み込み
+			args := []string{}
+			if _, err := os.Stat(argsFile); !os.IsNotExist(err) {
+				content, _ := os.ReadFile(argsFile)
+				args = strings.Fields(string(content))
+			}
+
 			// コマンド実行
-			cmd := exec.Command(binPath, "-d") // `-d` オプション（有向グラフ）
+			cmd := exec.Command(binPath, args...)
 			inFile, _ := os.Open(inputFile)
 			defer inFile.Close()
 			cmd.Stdin = inFile
