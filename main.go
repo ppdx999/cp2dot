@@ -1,15 +1,24 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 )
 
 func main() {
-	if len(os.Args) > 1 && os.Args[1] == "--version" {
-		fmt.Println("cp2dot v0.1.0")
-		return
+	scanner := bufio.NewScanner(os.Stdin)
+	edges := []string{}
+
+	for scanner.Scan() {
+		var u, v string
+		fmt.Sscanf(scanner.Text(), "%s %s", &u, &v)
+		edges = append(edges, fmt.Sprintf("    %s -> %s;", u, v))
 	}
 
-	fmt.Println("Welcome to cp2dot!")
+	fmt.Println("digraph G {")
+	for _, edge := range edges {
+		fmt.Println(edge)
+	}
+	fmt.Println("}")
 }
